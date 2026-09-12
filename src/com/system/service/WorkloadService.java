@@ -16,13 +16,12 @@ public class WorkloadService {
         this.calculator = calculator;
     }
 
-    public boolean assignSubjectToFaculty(Faculty faculty, Subject subject, int semester, String year)
+    public boolean assignSubjectToFaculty(Faculty faculty, Subject subject, int semester, String academicYear)
             throws WorkloadExceededException, SQLException {
         if (!faculty.canAssign(subject, calculator)) {
-            throw new WorkloadExceededException("Error: Assigning " + subject.getSubjectType()
-                    + " exceeds max hour capacity for " + faculty.getName());
+            throw new WorkloadExceededException("Error: Assignment exceeds max weekly hours for " + faculty.getName());
         }
 
-        return workloadDAO.assignSubject(faculty.getFacultyId(), subject.getSubjectId(), semester, year);
+        return workloadDAO.assignSubject(faculty.getFacultyId(), subject.getSubjectId(), semester, academicYear);
     }
 }
