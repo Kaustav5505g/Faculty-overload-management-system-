@@ -2,6 +2,13 @@
 
 A Java/JDBC application that checks faculty workload before saving subject assignments in MySQL.
 
+## Prerequisites
+
+- Java Development Kit (JDK) 8 or newer
+- MySQL Server
+- MySQL Connector/J
+- A PowerShell terminal on Windows, or equivalent shell commands on another platform
+
 ## Overview
 
 The application separates workload rules from database persistence. `WorkloadService` receives a faculty member, subject, semester, and academic year; it calculates whether the assignment is allowed and then delegates the insert to the DAO.
