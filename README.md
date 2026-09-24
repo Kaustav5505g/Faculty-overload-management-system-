@@ -43,6 +43,8 @@ sql/schema.sql
 
 The schema uses foreign keys with cascade deletion and allows only one assignment for a subject, semester, and academic year combination.
 
+Before running the Java program, make sure the database contains at least one matching faculty row and subject row. The sample entry point uses an assistant professor and a lecture subject; their IDs must exist in the database or the insert will fail.
+
 ## Compile and Run on Windows
 
 Run these commands from the project root. Replace the connector path with the location of your MySQL Connector/J JAR.
