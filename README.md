@@ -56,3 +56,11 @@ java -cp "out;path\to\mysql-connector-j.jar" com.system.Main
 ```
 
 The sample creates an assistant professor and a lecture subject, validates the assignment, and attempts to store it. A successful insert prints a success message; connection and validation failures are printed to standard error.
+
+## Troubleshooting
+
+- `ClassNotFoundException` usually means the Connector/J JAR is missing from the compile or runtime classpath.
+- A connection failure usually means MySQL is stopped or the settings in `DatabaseConnection.java` do not match the local server.
+- A foreign-key or duplicate-key error means the referenced records are missing or the same subject and term already have an assignment.
+
+For anything beyond local testing, replace the sample database password and move connection settings into environment variables or another protected configuration source.
