@@ -1,3 +1,11 @@
+/*
+ * Faculty Overload Management System: stores faculty, subject, and teaching
+ * assignment data in a relational database. Separate master tables and an
+ * assignment junction table keep the schema structured for 3NF by avoiding
+ * repeated faculty and subject details in assignments. Primary and foreign
+ * keys preserve relationships; unique email, subject code, and offering
+ * constraints prevent duplicate records.
+ */
 CREATE DATABASE IF NOT EXISTS faculty_workload_db;
 USE faculty_workload_db;
 

@@ -1,3 +1,9 @@
+/*
+ * Faculty Overload Management System: checks whether a faculty member can
+ * take on a subject without exceeding their workload limit. The OOP model
+ * represents faculty and subjects, while a lambda supplies the workload
+ * policy: LAB hours count twice and other subject hours count once.
+ */
 package com.system;
 
 import com.system.model.AssistantProfessor;
