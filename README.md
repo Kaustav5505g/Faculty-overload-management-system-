@@ -38,12 +38,12 @@ sql/schema.sql
 
 1. Install and start MySQL, then run [`sql/schema.sql`](sql/schema.sql). It creates the `faculty_workload_db` database and its three tables: `faculty`, `subjects`, and `workload_assignments`.
 2. Insert matching rows into `faculty` and `subjects`; the schema does not include seed data.
-3. Check the connection settings in [`DatabaseConnection.java`](src/com/system/dao/DatabaseConnection.java). Defaults are `localhost:3306`, database `faculty_workload_db`, user `root`, and password `password`.
+3. Check the connection settings in [`DatabaseConnection.java`](src/com/system/dao/DatabaseConnection.java).
 4. Add MySQL Connector/J to the classpath. There is no Maven or Gradle build file.
 
 The schema uses foreign keys with cascade deletion and allows only one assignment for a subject, semester, and academic year combination.
 
-Before running the Java program, make sure the database contains at least one matching faculty row and subject row. The sample entry point uses an assistant professor and a lecture subject; their IDs must exist in the database or the insert will fail.
+Before running the Java program, make sure the database contains the faculty and subject records you want to assign. The command-line entry point asks for their IDs, semester, and academic year, loads the records and existing assignments for that term, and validates the workload before inserting the assignment.
 
 ## Compile and Run on Windows
 
@@ -55,7 +55,7 @@ javac -cp "path\to\mysql-connector-j.jar" -d out (Get-ChildItem -Recurse src -Fi
 java -cp "out;path\to\mysql-connector-j.jar" com.system.Main
 ```
 
-The sample creates an assistant professor and a lecture subject, validates the assignment, and attempts to store it. A successful insert prints a success message; connection and validation failures are printed to standard error.
+The program uses the entered IDs to find existing database records; it does not create sample faculty or subjects. A successful insert prints a success message; connection, lookup, and validation failures are reported on standard error.
 
 ## Troubleshooting
 
