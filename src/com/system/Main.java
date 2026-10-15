@@ -8,18 +8,17 @@ package com.system;
 
 import com.system.dao.DatabaseConnection;
 import com.system.dao.WorkloadDAOImpl;
-import com.system.model.AssistantProfessor;
-import com.system.model.Faculty;
-import com.system.model.Subject;
 import com.system.model.WorkloadCalculator;
 import com.system.service.WorkloadExceededException;
 import com.system.service.WorkloadService;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
         try (Connection connection = DatabaseConnection.getConnection()) {
             WorkloadDAOImpl dao = new WorkloadDAOImpl(connection);
 
@@ -32,18 +31,38 @@ public class Main {
 
             WorkloadService service = new WorkloadService(dao, calculator);
 
-            Faculty prof = new AssistantProfessor(1, "Dr. Smith", "smith@university.edu");
-            Subject javaSub = new Subject(101, "CS101", "Java Programming", 3, 4, "LECTURE");
+            int facultyId = readInteger(scanner, "Enter faculty ID: ");
+            int subjectId = readInteger(scanner, "Enter subject ID: ");
+            int semester = readInteger(scanner, "Enter semester: ");
+            System.out.print("Enter academic year (for example, 2025-2026): ");
+            String academicYear = scanner.nextLine().trim();
 
-            boolean assigned = service.assignSubjectToFaculty(prof, javaSub, 1, "2025-2026");
+            boolean assigned = service.assignSubjectToFaculty(
+                    facultyId, subjectId, semester, academicYear);
 
             if (assigned) {
-                System.out.println("Success: Subject assigned safely and recorded in the database!");
+                System.out.println("Subject assigned successfully.");
+            } else {
+                System.err.println("The assignment was not saved.");
             }
         } catch (SQLException e) {
             System.err.println("Database Error: " + e.getMessage());
         } catch (WorkloadExceededException e) {
             System.err.println("Validation Error: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.err.println("Input Error: " + e.getMessage());
+        }
+    }
+
+    private static int readInteger(Scanner scanner, String prompt) {
+        while (true) {
+            System.out.print(prompt);
+            String input = scanner.nextLine().trim();
+            try {
+                return Integer.parseInt(input);
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a whole number.");
+            }
         }
     }
 }
