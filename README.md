@@ -1,86 +1,47 @@
-# Faculty Workload Management System
+# Faculty Overload Management System
 
-A Java/JDBC application that checks faculty workload before saving subject assignments in MySQL.
+A robust Java-based desktop application designed to track faculty teaching hours, enforce department workload policies, and prevent academic overload using Object-Oriented Programming (OOP) and MySQL database integration.
 
-## Prerequisites
+---
 
-- Java Development Kit (JDK) 8 or newer
-- MySQL Server
-- MySQL Connector/J
-- A PowerShell terminal on Windows, or equivalent shell commands on another platform
+## 🚀 Project Overview
 
-## Overview
+Managing faculty teaching assignments manually often leads to miscalculated hours and accidental teaching overloads. This system provides a systematic approach to model faculty members and subjects, calculate workloads dynamically based on course types (Lectures vs. Labs), enforce strict department limits, and securely store records using JDBC.
 
-The application separates workload rules from database persistence. `WorkloadService` loads faculty, subject, and existing assignments through the DAO, checks the faculty member's workload for the selected semester and academic year, and then delegates the insert to the DAO.
+---
 
-## Features
+## 🛠️ Tech Stack & Architecture
 
-- `Professor` and `AssistantProfessor` have weekly limits of 14 and 18 hours, respectively, preserving the existing workload rules.
-- Lecture hours count normally; lab hours count twice in the workload calculator.
-- `WorkloadService` validates assignments, and the DAO saves valid records using prepared statements.
-- `WorkloadExceededException` reports assignments that exceed a faculty member's limit.
-- The command-line entry point is [`Main.java`](src/com/system/Main.java). It asks for IDs and term details and uses records already in the database.
+* **Programming Language:** Java
+* **Core Paradigms:** Object-Oriented Programming (OOP) (Inheritance, Polymorphism, Abstraction, Encapsulation)[cite: 4, 5]
+* **Database & Connectivity:** MySQL, JDBC (`PreparedStatement`, DAO Design Pattern)[cite: 4, 8]
+* **Frontend / UI:** Java Swing (Desktop GUI) / HTML & CSS (Web Presentation Mockup)[cite: 4, 6]
 
-This is currently a command-line application. It has no graphical user interface, authentication, reports, or automated tests.
+---
 
-## Project Structure
+## 📌 Key Features & Business Logic
+
+1. **OOP Hierarchy:** Abstract `Faculty` class extended by specialized subclasses (`Professor` with a max limit of 14 hours, and `Assistant Professor` with a max limit of 18 hours)[cite: 4, 5].
+2. **Workload Calculation:** Automatically weighs teaching hours according to course structure (e.g., standard lectures vs. structured lab hours)[cite: 4, 6].
+3. **Overload Validation (`canAssign()`):** Enforces department constraints by verifying whether `Current Load + New Assignment Load ≤ Maximum Allowed Limit` before saving[cite: 4, 6].
+4. **Data Persistence:** Separates database operations using the Data Access Object (DAO) pattern with parameterized SQL queries via JDBC to prevent SQL injection[cite: 4, 8].
+
+---
+
+## 📂 Project Structure
 
 ```text
-src/com/system/
-├── Main.java
-├── dao/       Database connection and assignment persistence
-├── model/     Faculty, subjects, and workload calculation
-└── service/  Assignment validation and exceptions
-sql/schema.sql
-```
-
-## Database Setup
-
-1. Install and start MySQL, then run [`sql/schema.sql`](sql/schema.sql). It creates the `faculty_workload_db` database and its three tables: `faculty`, `subjects`, and `workload_assignments`.
-<<<<<<< HEAD
-2. Add faculty and subject records to the database before using the application. The schema intentionally contains no hardcoded seed data.
-3. Set the connection environment variables in the terminal where the application will run. `DB_URL` is optional and defaults to `jdbc:mysql://localhost:3306/faculty_workload_db`; `DB_USER` defaults to `root`; `DB_PASSWORD` defaults to an empty password. For PowerShell:
-
-   ```powershell
-   $env:DB_USER = "your-mysql-user"
-   $env:DB_PASSWORD = "your-mysql-password"
-   ```
-
-   These values are read at runtime and are not stored in source control.
-=======
-2. Insert matching rows into `faculty` and `subjects`; the schema does not include seed data.
-3. Check the connection settings in [`DatabaseConnection.java`](src/com/system/dao/DatabaseConnection.java).
->>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
-4. Add MySQL Connector/J to the classpath. There is no Maven or Gradle build file.
-
-The schema uses foreign keys with cascade deletion and allows only one assignment for a subject, semester, and academic year combination. Workload is checked against assignments for the selected faculty member in that same semester and academic year.
-
-<<<<<<< HEAD
-Faculty designations must be `Professor` or `Assistant Professor` (case-insensitive) for the application to map a database row to the corresponding Java subclass. The schema's `max_hours` column is not used by the current Java workload policy; the Java subclasses retain the existing limits. Subject types must be `LECTURE` or `LAB`.
-=======
-Before running the Java program, make sure the database contains the faculty and subject records you want to assign. The command-line entry point asks for their IDs, semester, and academic year, loads the records and existing assignments for that term, and validates the workload before inserting the assignment.
->>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
-
-## Compile and Run on Windows
-
-Run these commands from the project root. Replace the connector path with the location of your MySQL Connector/J JAR. Compile and run using the same configured environment variables from the database setup instructions.
-
-```powershell
-New-Item -ItemType Directory -Force out
-javac -cp "path\to\mysql-connector-j.jar" -d out (Get-ChildItem -Recurse src -Filter *.java).FullName
-java -cp "out;path\to\mysql-connector-j.jar" com.system.Main
-```
-
-<<<<<<< HEAD
-The application prompts for a faculty ID, subject ID, semester, and academic year, then loads the selected records and existing assignments from MySQL. A successful insert prints a confirmation; connection and validation failures are printed to standard error.
-=======
-The program uses the entered IDs to find existing database records; it does not create sample faculty or subjects. A successful insert prints a success message; connection, lookup, and validation failures are reported on standard error.
->>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
-
-## Troubleshooting
-
-- `ClassNotFoundException` usually means the Connector/J JAR is missing from the compile or runtime classpath.
-- A connection failure usually means MySQL is stopped or the settings in `DatabaseConnection.java` do not match the local server.
-- A foreign-key or duplicate-key error means the referenced records are missing or the same subject and term already have an assignment.
-- `Unsupported faculty designation` means the selected row does not use one of the supported designation names.
-- The Java workload limits are fixed by faculty type, and assignments from other semesters or academic years do not count toward the selected term.
+Faculty-overload-management-system/
+│
+├── sql/
+│   └── schema.sql              # MySQL database schema and table definitions
+├── src/
+│   └── com/system/
+│       ├── model/              # Faculty, Professor, AssistantProfessor, Subject classes
+│       ├── dao/                # WorkloadDAO and WorkloadDAOImpl database handlers
+│       ├── service/            # Workload calculation and business logic
+│       └── ui/                 # Java Swing UI & Web-based interactive frontend
+│
+├── index.html                  # Web frontend dashboard presentation view
+├── README.md                   # Project documentation
+└── .gitignore                  # Git ignore rules
