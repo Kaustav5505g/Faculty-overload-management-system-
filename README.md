@@ -37,6 +37,7 @@ sql/schema.sql
 ## Database Setup
 
 1. Install and start MySQL, then run [`sql/schema.sql`](sql/schema.sql). It creates the `faculty_workload_db` database and its three tables: `faculty`, `subjects`, and `workload_assignments`.
+<<<<<<< HEAD
 2. Add faculty and subject records to the database before using the application. The schema intentionally contains no hardcoded seed data.
 3. Set the connection environment variables in the terminal where the application will run. `DB_URL` is optional and defaults to `jdbc:mysql://localhost:3306/faculty_workload_db`; `DB_USER` defaults to `root`; `DB_PASSWORD` defaults to an empty password. For PowerShell:
 
@@ -46,11 +47,19 @@ sql/schema.sql
    ```
 
    These values are read at runtime and are not stored in source control.
+=======
+2. Insert matching rows into `faculty` and `subjects`; the schema does not include seed data.
+3. Check the connection settings in [`DatabaseConnection.java`](src/com/system/dao/DatabaseConnection.java).
+>>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
 4. Add MySQL Connector/J to the classpath. There is no Maven or Gradle build file.
 
 The schema uses foreign keys with cascade deletion and allows only one assignment for a subject, semester, and academic year combination. Workload is checked against assignments for the selected faculty member in that same semester and academic year.
 
+<<<<<<< HEAD
 Faculty designations must be `Professor` or `Assistant Professor` (case-insensitive) for the application to map a database row to the corresponding Java subclass. The schema's `max_hours` column is not used by the current Java workload policy; the Java subclasses retain the existing limits. Subject types must be `LECTURE` or `LAB`.
+=======
+Before running the Java program, make sure the database contains the faculty and subject records you want to assign. The command-line entry point asks for their IDs, semester, and academic year, loads the records and existing assignments for that term, and validates the workload before inserting the assignment.
+>>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
 
 ## Compile and Run on Windows
 
@@ -62,7 +71,11 @@ javac -cp "path\to\mysql-connector-j.jar" -d out (Get-ChildItem -Recurse src -Fi
 java -cp "out;path\to\mysql-connector-j.jar" com.system.Main
 ```
 
+<<<<<<< HEAD
 The application prompts for a faculty ID, subject ID, semester, and academic year, then loads the selected records and existing assignments from MySQL. A successful insert prints a confirmation; connection and validation failures are printed to standard error.
+=======
+The program uses the entered IDs to find existing database records; it does not create sample faculty or subjects. A successful insert prints a success message; connection, lookup, and validation failures are reported on standard error.
+>>>>>>> 71a7eb1c06214c124db413bd1da69f0d6bfa1cef
 
 ## Troubleshooting
 
