@@ -15,13 +15,16 @@ These five rules are enforced in three independent layers: the MySQL database (t
 ---
 ---
 
-## 🛠️ Tech Stack & Architecture
-
-* **Programming Language:** Java
-* **Core Paradigms:** Object-Oriented Programming (OOP) (Inheritance, Polymorphism, Abstraction, Encapsulation)[cite: 4, 5]
-* **Database & Connectivity:** MySQL, JDBC (`PreparedStatement`, DAO Design Pattern)[cite: 4, 8]
-* **Frontend / UI:** Java Swing (Desktop GUI) / HTML & CSS (Web Presentation Mockup)[cite: 4, 6]
-
+## Tech Stack
+| Layer | Technology |
+|---|---|
+| **Database** | MySQL 8.x (also tested on MariaDB 10.11) |
+| **DB connectivity** | JDBC with MySQL Connector/J, `PreparedStatement` |
+| **Design pattern** | Data Access Object (DAO) — `WorkloadDAO` interface + `WorkloadDAOImpl` |
+| **Java OOP** | Abstract `Faculty` → `Professor` / `AssistantProfessor`; `WorkloadCalculator` functional interface |
+| **Web UI** | Plain HTML, CSS, vanilla JavaScript — no framework, no CDN, no build step |
+| **SQL features** | View, stored functions, stored procedure, `BEFORE INSERT` trigger, `NOT EXISTS` subquery |
+---
 ---
 
 ## 📌 Key Features & Business Logic
