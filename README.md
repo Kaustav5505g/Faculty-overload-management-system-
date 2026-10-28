@@ -36,20 +36,36 @@ These five rules are enforced in three independent layers: the MySQL database (t
 
 ---
 
-## 📂 Project Structure
-
+## Project Structure
 ```text
 Faculty-overload-management-system/
 │
 ├── sql/
-│   └── schema.sql              # MySQL database schema and table definitions
-├── src/
-│   └── com/system/
-│       ├── model/              # Faculty, Professor, AssistantProfessor, Subject classes
-│       ├── dao/                # WorkloadDAO and WorkloadDAOImpl database handlers
-│       ├── service/            # Workload calculation and business logic
-│       └── ui/                 # Java Swing UI & Web-based interactive frontend
+│   ├── schema.sql              # DDL: creates the database, 3 tables, constraints
+│   └── sample_data.sql         # DML: 6 faculty, 6 subjects, 4 existing assignments
 │
-├── index.html                  # Web frontend dashboard presentation view
-├── README.md                   # Project documentation
-└── .gitignore                  # Git ignore rules
+├── src/com/system/
+│   ├── Main.java               # Entry point: reads input, calls WorkloadService
+│   ├── model/
+│   │   ├── Faculty.java        # Abstract base class with canAssign() and replaceAssignments()
+│   │   ├── Professor.java      # Subclass — max 14 h
+│   │   ├── AssistantProfessor.java  # Subclass — max 18 h
+│   │   ├── Subject.java        # Subject entity (code, type, weekly hours, credits)
+│   │   └── WorkloadCalculator.java  # Functional interface: LAB hours x2, LECTURE x1
+│   ├── dao/
+│   │   ├── DatabaseConnection.java  # JDBC connection helper
+│   │   ├── WorkloadDAO.java         # Interface (findFacultyById, findSubjectById, assignSubject)
+│   │   └── WorkloadDAOImpl.java     # PreparedStatement implementations returning Optional<T>
+│   └── service/
+│       ├── WorkloadService.java     # Orchestrates the check: validate → load → canAssign → insert
+│       └── WorkloadExceededException.java  # Thrown when current + new > limit
+│
+└── src/com/system/ui/          # Static web interface (open index.html directly)
+    ├── index.html              # Entry form: faculty, subject, semester, year
+    ├── result.html             # Result page: verdict, breakdown table, bar, why, suggestions
+    ├── css/
+    │   └── style.css           # Plain internal-tool design; no gradients or animations
+    └── js/
+        ├── data.js             # Demo data (must match sample_data.sql exactly)
+        ├── workload.js         # Pure rule functions mirroring Faculty.canAssign()
+        └── verify.js           # Node.js test runner for all 
