@@ -1,3 +1,5 @@
+# Faculty Overload Management System
+
 A Java + MySQL + browser application that checks whether a teaching assignment is allowed before recording it. Given a faculty member, subject, semester and academic year, the system applies the department workload rules, records the assignment only when it passes, and explains the decision in plain language.
 ## 🚀 Project Overview
 
