@@ -1,9 +1,4 @@
-# Faculty Overload Management System
-
-A robust Java-based desktop application designed to track faculty teaching hours, enforce department workload policies, and prevent academic overload using Object-Oriented Programming (OOP) and MySQL database integration.
-
----
-
+A Java + MySQL + browser application that checks whether a teaching assignment is allowed before recording it. Given a faculty member, subject, semester and academic year, the system applies the department workload rules, records the assignment only when it passes, and explains the decision in plain language.
 ## 🚀 Project Overview
 
 Managing faculty teaching assignments manually often leads to miscalculated hours and accidental teaching overloads. This system provides a systematic approach to model faculty members and subjects, calculate workloads dynamically based on course types (Lectures vs. Labs), enforce strict department limits, and securely store records using JDBC.
