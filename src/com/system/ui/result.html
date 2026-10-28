@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignment Result — Faculty Workload Check</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="top-bar">
+  <div class="top-bar-inner">
+    <h1>Faculty Workload Check</h1>
+    <div class="dept">Manipal University Jaipur, Department of Computer Science and Engineering</div>
+  </div>
+</header>
+
+<main class="page-content" id="pageContent">
+  <!-- Filled entirely by JS below -->
+</main>
+
+<script src="js/data.js"></script>
+<script src="js/workload.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  const container = document.getElementById("pageContent");
+
+  /* ── helpers ─────────────────────────────────────────────────────────── */
+  function el(tag, attrs, text) {
+    const node = document.createElement(tag);
+    if (attrs) Object.entries(attrs).forEach(function ([k, v]) { node.setAttribute(k, v); });
+    if (text !== undefined) node.textContent = text;
+    return node;
+  }
+
+  function esc(s) {
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  /* safer innerHTML wrapper – only used for content we control */
+  function setHTML(node, html) { node.innerHTML = html; }
+
+  /* ── Parse query string ────────────────────────────────────────────── */
+  const params  = new URLSearchParams(window.location.search);
+  const rawFac  = params.get("faculty");
+  const rawSub  = params.get("subject");
+  const rawSem  = params.get("semester");
+  const rawYear = params.get("year");
+
+  const facultyId  = parseInt(rawFac,  10);
+  const subjectId  = parseInt(rawSub,  10);
+  const semester   = parseInt(rawSem,  10);
+  const academicYear = (rawYear || "").trim();
+
+  const yearOk = /^\d{4}-\d{4}$/.test(academicYear);
+  const paramsOk =
+    rawFac && rawSub && rawSem && rawYear &&
+    facultyId > 0 && subjectId > 0 && semester >= 1 && semester <= 8 && yearOk &&
+    FACULTY.find(function (f) { return f.id === facultyId; }) &&
+    SUBJECTS.find(function (s) { return s.id === subjectId; });
+
+  /* ── Missing / invalid params ─────────────────────────────────────── */
+  if (!paramsOk) {
+    const banner = el("div", { class: "error-banner" });
+    setHTML(banner,
+      "<p><strong>Missing or invalid parameters.</strong></p>" +
+      "<p>This page must be opened from the assignment form, not directly.</p>" +
+      "<p><a href='index.html'>Go to the assignment form</a></p>"
+    );
+    container.appendChild(banner);
+    return;
+  }
+
+  /* ── Run the check ────────────────────────────────────────────────── */
+  const result = checkAssignment(facultyId, subjectId, semester, academicYear);
+
+  /* ── 1. Verdict box ───────────────────────────────────────────────── */
+  function verdictText(v) {
+    switch (v) {
+      case "ALLOWED":          return "ALLOWED";
+      case "NEAR_LIMIT":       return "ALLOWED (at or above 85\u202f% of limit)";
+      case "OVERLOAD":         return "REJECTED: OVERLOAD";
+      case "ALREADY_ASSIGNED": return "NOT POSSIBLE: SUBJECT ALREADY ASSIGNED";
+      default:                 return "UNKNOWN";
+    }
+  }
+  function verdictClass(v) {
+    switch (v) {
+      case "ALLOWED":          return "verdict-allowed";
+      case "NEAR_LIMIT":       return "verdict-near-limit";
+      case "OVERLOAD":         return "verdict-overload";
+      case "ALREADY_ASSIGNED": return "verdict-not-possible";
+      default:                 return "";
+    }
+  }
+  function verdictReason(r) {
+    const f = r.faculty;
+    const s = r.subject;
+    switch (r.verdict) {
+      case "ALLOWED":
+        return f.name + " has " + r.existing + " h assigned in semester " + r.semester +
+               ". Adding " + s.code + " (" + r.newHours + " h) gives " + r.total +
+               " h, which is within the " + f.designation + " limit of " + r.limit + " h.";
+      case "NEAR_LIMIT":
+        return f.name + " has " + r.existing + " h assigned in semester " + r.semester +
+               ". Adding " + s.code + " (" + r.newHours + " h) gives " + r.total +
+               " h — allowed but within 15\u202f% of the " + r.limit + "\u202fh limit for a " + f.designation + ".";
+      case "OVERLOAD":
+        return f.name + " already has " + r.existing + " h in semester " + r.semester +
+               ". Adding " + s.code + " (" + r.newHours + " h) would reach " + r.total +
+               " h, which is " + r.overBy + " h over the " + f.designation + " limit of " + r.limit + " h.";
+      case "ALREADY_ASSIGNED": {
+        const holder = r.alreadyHolder;
+        return s.code + " " + s.title + " is already assigned to " + holder.name +
+               " in semester " + r.semester + ", " + r.academicYear +
+               ". A subject may only have one faculty member per semester and academic year.";
+      }
+      default: return "";
+    }
+  }
+
+  const verdictDiv = el("div", { class: "verdict " + verdictClass(result.verdict) });
+  const verdictLabel = el("span", { class: "verdict-label" }, verdictText(result.verdict));
+  const verdictReasonEl = el("span", { class: "verdict-reason" }, verdictReason(result));
+  verdictDiv.appendChild(verdictLabel);
+  verdictDiv.appendChild(verdictReasonEl);
+  container.appendChild(verdictDiv);
+
+  /* ── 2. Request summary ───────────────────────────────────────────── */
+  const f = result.faculty;
+  const s = result.subject;
+  const wh = workloadHours(s);
+  const whLabel = workloadHoursLabel(s);
+
+  const summaryPanel = el("div", { class: "panel" });
+  setHTML(summaryPanel,
+    "<p class='panel-title'>Request summary</p>" +
+    "<dl class='summary-grid'>" +
+      "<div class='summary-item'><dt>Faculty</dt><dd>" + esc(f.name) + "</dd></div>" +
+      "<div class='summary-item'><dt>Designation</dt><dd>" + esc(f.designation) + "</dd></div>" +
+      "<div class='summary-item'><dt>Weekly hour limit</dt><dd>" + f.maxHours + " h</dd></div>" +
+      "<div class='summary-item'><dt>Semester</dt><dd>" + semester + " &mdash; " + esc(academicYear) + "</dd></div>" +
+      "<div class='summary-item'><dt>Subject code</dt><dd>" + esc(s.code) + "</dd></div>" +
+      "<div class='summary-item'><dt>Subject title</dt><dd>" + esc(s.title) + "</dd></div>" +
+      "<div class='summary-item'><dt>Type</dt><dd>" + esc(s.type) + "</dd></div>" +
+      "<div class='summary-item'><dt>Weekly hours</dt><dd>" + s.weeklyHours + " h/wk</dd></div>" +
+      "<div class='summary-item'><dt>Workload hours</dt><dd>" + whLabel + " h" +
+        (s.type === "LAB" ? " <em>(LAB counts twice)</em>" : "") + "</dd></div>" +
+    "</dl>"
+  );
+  container.appendChild(summaryPanel);
+
+  /* ── 3. Breakdown table (not shown for ALREADY_ASSIGNED) ──────────── */
+  if (result.verdict !== "ALREADY_ASSIGNED") {
+    const breakdownPanel = el("div", { class: "panel" });
+    let tableHTML =
+      "<p class='panel-title'>How the total was worked out</p>" +
+      "<div class='table-scroll'>" +
+      "<table>" +
+      "<thead><tr>" +
+        "<th scope='col'>Code</th>" +
+        "<th scope='col'>Title</th>" +
+        "<th scope='col'>Type</th>" +
+        "<th scope='col' class='num'>Weekly h</th>" +
+        "<th scope='col' class='num'>Hours counted</th>" +
+      "</tr></thead><tbody>";
+
+    /* existing assignments */
+    result.existingSubjects.forEach(function (sub) {
+      tableHTML +=
+        "<tr>" +
+        "<td>" + esc(sub.code)  + "</td>" +
+        "<td>" + esc(sub.title) + "</td>" +
+        "<td>" + esc(sub.type)  + "</td>" +
+        "<td class='num'>" + sub.weeklyHours + "</td>" +
+        "<td class='num'>" + workloadHoursLabel(sub) + "</td>" +
+        "</tr>";
+    });
+
+    /* new subject row */
+    tableHTML +=
+      "<tr class='new-row'>" +
+      "<td>" + esc(s.code)  + " <em>(new)</em></td>" +
+      "<td>" + esc(s.title) + "</td>" +
+      "<td>" + esc(s.type)  + "</td>" +
+      "<td class='num'>" + s.weeklyHours + "</td>" +
+      "<td class='num'>" + whLabel       + "</td>" +
+      "</tr>";
+
+    /* totals */
+    const overClass = result.verdict === "OVERLOAD" ? " over-row" : "";
+    tableHTML +=
+      "</tbody><tfoot>" +
+      "<tr class='subtotal-row" + overClass + "'>" +
+        "<td colspan='4'>Total</td><td class='num'><strong>" + result.total + " h</strong></td>" +
+      "</tr>" +
+      "<tr class='limit-row'>" +
+        "<td colspan='4'>Limit (" + esc(f.designation) + ")</td><td class='num'>" + result.limit + " h</td>" +
+      "</tr>";
+
+    if (result.verdict === "OVERLOAD") {
+      tableHTML +=
+        "<tr class='over-row'>" +
+          "<td colspan='4'>Over by</td><td class='num'>" + result.overBy + " h</td>" +
+        "</tr>";
+    } else {
+      tableHTML +=
+        "<tr class='remaining-row'>" +
+          "<td colspan='4'>Remaining after assignment</td><td class='num'>" + result.remaining + " h</td>" +
+        "</tr>";
+    }
+
+    tableHTML += "</tfoot></table></div>";
+
+    /* capacity bar */
+    const pct = Math.min(100, Math.round((result.total / result.limit) * 100));
+    let fillClass = "cap-fill-ok";
+    if (result.verdict === "OVERLOAD")   fillClass = "cap-fill-over";
+    else if (result.verdict === "NEAR_LIMIT") fillClass = "cap-fill-near";
+
+    tableHTML +=
+      "<div class='cap-bar-wrap mt8'>" +
+        "<div class='cap-bar-fill " + fillClass + "' style='width:" + pct + "%'></div>" +
+      "</div>" +
+      "<div class='cap-bar-label'>" + result.total + " of " + result.limit + " h (" + pct + "%)</div>";
+
+    setHTML(breakdownPanel, tableHTML);
+    container.appendChild(breakdownPanel);
+  }
+
+  /* ── 4. "Why" section (plain English) ────────────────────────────── */
+  function buildWhyText(r) {
+    const fname = r.faculty.name;
+    const desig = r.faculty.designation;
+    const lim   = r.faculty.maxHours;
+    const sem   = r.semester;
+    const yr    = r.academicYear;
+    const sub   = r.subject;
+
+    if (r.verdict === "ALREADY_ASSIGNED") {
+      return esc(sub.code) + " " + esc(sub.title) + " is already assigned to " +
+             esc(r.alreadyHolder.name) + " in semester " + sem + ", " + yr +
+             ". The database enforces a rule that each subject can only have one faculty member per semester and academic year. " +
+             "This prevents the same slot from being double-booked.";
+    }
+
+    /* build existing-load sentence */
+    let existingSentence;
+    if (r.existingSubjects.length === 0) {
+      existingSentence = esc(fname) + " has no subjects assigned in semester " + sem + ", " + yr + ", so their current load is 0 h.";
+    } else {
+      const parts = r.existingSubjects.map(function (ex) {
+        if (ex.type === "LAB") {
+          return esc(ex.title) + " " + ex.weeklyHours + " x 2 = " + (ex.weeklyHours * 2) + " h";
+        }
+        return esc(ex.title) + " " + ex.weeklyHours + " h";
+      });
+      existingSentence =
+        esc(fname) + " already has " + r.existing + " h in semester " + sem + ", " + yr +
+        " (" + parts.join(" + ") + ").";
+    }
+
+    /* new subject sentence */
+    let newSentence;
+    if (sub.type === "LAB") {
+      newSentence = esc(sub.title) + " is a LAB, so its " + sub.weeklyHours + " weekly hours count twice: " +
+                   sub.weeklyHours + " x 2 = " + r.newHours + " h added.";
+    } else {
+      newSentence = esc(sub.title) + " is a LECTURE with " + sub.weeklyHours + " weekly hours, so " + r.newHours + " h is added.";
+    }
+
+    const totalSentence = "That brings the total to " + r.existing + " + " + r.newHours + " = " + r.total + " h.";
+    const limitSentence = "The limit for a " + esc(desig) + " is " + lim + " h.";
+
+    let conclusionSentence;
+    if (r.verdict === "OVERLOAD") {
+      conclusionSentence = r.total + " > " + lim + ", so this is " + r.overBy + " h over the limit — assignment is not allowed.";
+    } else if (r.verdict === "NEAR_LIMIT") {
+      conclusionSentence = r.total + " \u2264 " + lim + ", so the assignment is allowed. However, " +
+                           r.total + " h is " + Math.round((r.total / lim) * 100) + "% of the limit, which is at or above 85%.";
+    } else {
+      conclusionSentence = r.total + " \u2264 " + lim + ", so the assignment is within the limit. " + r.remaining + " h will remain.";
+    }
+
+    return existingSentence + " " + newSentence + " " + totalSentence + " " + limitSentence + " " + conclusionSentence;
+  }
+
+  const whyPanel = el("div", { class: "panel" });
+  setHTML(whyPanel,
+    "<p class='panel-title'>Why</p>" +
+    "<p class='why-text'>" + buildWhyText(result) + "</p>"
+  );
+  container.appendChild(whyPanel);
+
+  /* ── 5. "What can be done" (only when not allowed) ────────────────── */
+  if (result.verdict === "OVERLOAD" || result.verdict === "ALREADY_ASSIGNED") {
+    const sugPanel = el("div", { class: "panel suggestions" });
+    let sugHTML = "<p class='panel-title'>What can be done</p>";
+
+    if (result.verdict === "OVERLOAD") {
+      /* (a) Other faculty who can take the subject */
+      const others = whoCanTake(subjectId, semester, academicYear, facultyId);
+      if (others.length > 0) {
+        sugHTML += "<h3>Other faculty members who can take " + esc(s.code) + " " + esc(s.title) + "</h3><ul>";
+        others.forEach(function (o) {
+          sugHTML += "<li>" + esc(o.faculty.name) + " (" + esc(o.faculty.designation) + ") — current load " +
+                     o.currentLoad + " h, after assignment " + o.totalAfter + " of " + o.faculty.maxHours +
+                     " h (" + o.remaining + " h remaining)</li>";
+        });
+        sugHTML += "</ul>";
+      } else {
+        sugHTML += "<p>No other faculty member can take this subject in semester " + semester + ", " + esc(academicYear) + " without exceeding their limit.</p>";
+      }
+
+      /* (b) Removals that would make the current faculty's load fit */
+      const removals = removalsThatWouldFit(result);
+      if (removals.length > 0) {
+        sugHTML += "<h3>Existing assignments of " + esc(f.name) + " that, if removed, would make this fit</h3><ul>";
+        removals.forEach(function (sub) {
+          const hoursAfterRemoval = result.existing - workloadHours(sub) + result.newHours;
+          sugHTML += "<li>Remove " + esc(sub.code) + " " + esc(sub.title) + " (" + workloadHoursLabel(sub) + " h) — load would become " +
+                     hoursAfterRemoval + " of " + f.maxHours + " h</li>";
+        });
+        sugHTML += "</ul>";
+      } else {
+        sugHTML += "<p>No single existing assignment can be removed from " + esc(f.name) + " to make this subject fit.</p>";
+      }
+
+    } else if (result.verdict === "ALREADY_ASSIGNED") {
+      /* List free subjects in this semester/year */
+      const free = freeSubjects(semester, academicYear);
+      if (free.length > 0) {
+        sugHTML += "<h3>Subjects not yet assigned in semester " + semester + ", " + esc(academicYear) + "</h3><ul>";
+        free.forEach(function (sub) {
+          sugHTML += "<li>" + esc(sub.code) + " " + esc(sub.title) + " (" + esc(sub.type) + ", " + workloadHoursLabel(sub) + " h)</li>";
+        });
+        sugHTML += "</ul>";
+      } else {
+        sugHTML += "<p>All subjects have been assigned in semester " + semester + ", " + esc(academicYear) + ".</p>";
+      }
+    }
+
+    setHTML(sugPanel, sugHTML);
+    container.appendChild(sugPanel);
+  }
+
+  /* ── 6. Action buttons ────────────────────────────────────────────── */
+  const btnPanel = el("div", { class: "panel mb0" });
+  setHTML(btnPanel,
+    "<div class='btn-row'>" +
+      "<a href='index.html' class='btn btn-primary'>Check another assignment</a>" +
+      "<button class='btn btn-secondary' onclick='window.print()'>Print this page</button>" +
+    "</div>"
+  );
+  container.appendChild(btnPanel);
+
+}());
+</script>
+
+</body>
+</html>

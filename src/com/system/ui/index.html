@@ -1,224 +1,223 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Faculty Overload Management System</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #134e5e 100%);
-            background-attachment: fixed;
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 90vh;
-        }
-        .container {
-            background: rgba(255, 255, 255, 0.12);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.25);
-            padding: 35px 45px;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
-            width: 500px;
-            color: #fff;
-        }
-        .header {
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            padding-bottom: 15px;
-            margin-bottom: 25px;
-        }
-        h2 {
-            margin: 0;
-            color: #ffffff;
-            font-size: 24px;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        .sub {
-            color: rgba(255, 255, 255, 0.75);
-            font-size: 13px;
-            margin-top: 6px;
-        }
-        .form-group {
-            margin-bottom: 20px;
-        }
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: rgba(255, 255, 255, 0.9);
-            font-size: 13.5px;
-        }
-        select, input {
-            width: 100%;
-            padding: 12px 14px;
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            box-sizing: border-box;
-            font-size: 14px;
-            color: #ffffff;
-            outline: none;
-            transition: all 0.3s ease;
-        }
-        select option {
-            background: #2a5298;
-            color: #ffffff;
-        }
-        select:focus, input:focus {
-            border-color: #63b3ed;
-            box-shadow: 0 0 10px rgba(99, 179, 237, 0.4);
-            background: rgba(255, 255, 255, 0.22);
-        }
-        button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 10px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            transition: all 0.3s ease;
-        }
-        button:hover {
-            background: linear-gradient(135deg, #2b6cb0 0%, #2c5282 100%);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
-        }
-        .result-card {
-            margin-top: 25px;
-            padding: 16px;
-            border-radius: 12px;
-            font-size: 13.5px;
-            display: none;
-            backdrop-filter: blur(10px);
-            animation: fadeIn 0.4s ease;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .success {
-            background: rgba(56, 161, 105, 0.25);
-            color: #e6fffa;
-            border: 1px solid rgba(72, 187, 120, 0.5);
-        }
-        .error {
-            background: rgba(229, 62, 62, 0.25);
-            color: #fff5f5;
-            border: 1px solid rgba(245, 101, 101, 0.5);
-        }
-        .math-breakdown {
-            margin-top: 8px;
-            font-family: monospace;
-            font-size: 12.5px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            border-radius: 6px;
-            color: rgba(255, 255, 255, 0.9);
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Faculty Workload Check</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h2>Faculty Overload Management System</h2>
-        <div class="sub">Manipal University Jaipur • B.Tech CSE Project</div>
-    </div>
-    
-    <div class="form-group">
-        <label for="faculty">Select Faculty Member:</label>
-        <select id="faculty">
-            <option value="">-- Choose Faculty --</option>
-            <option value="prof" data-max="14">Dr. Sharma (Professor - Max limit: 14 hrs)</option>
-            <option value="prof" data-max="14">Prof. Abhishek Dwivedi (Professor - Max limit: 14 hrs)</option>
-            <option value="prof" data-max="14">Prof. Pankaj Pandey (Professor - Max limit: 14 hrs)</option>
+<header class="top-bar">
+  <div class="top-bar-inner">
+    <h1>Faculty Workload Check</h1>
+    <div class="dept">Manipal University Jaipur, Department of Computer Science and Engineering</div>
+  </div>
+</header>
+
+<main class="page-content">
+  <div class="panel">
+    <p class="panel-title">Check a new subject assignment</p>
+
+    <form id="assignForm" novalidate>
+
+      <!-- Faculty -->
+      <div class="form-group">
+        <label for="selFaculty">Faculty member</label>
+        <select id="selFaculty" aria-describedby="errFaculty">
+          <option value="">— Select faculty —</option>
         </select>
-    </div>
+        <span class="field-error" id="errFaculty" role="alert"></span>
+        <!-- Load summary injected here by JS -->
+        <div id="loadInfo" class="load-info" hidden></div>
+      </div>
 
-    <div class="form-group">
-        <label for="subject">Select Subject & Type:</label>
-        <select id="subject">
-            <option value="">-- Choose Subject --</option>
-            <option value="4" data-name="Java Programming (Lecture)">Java Programming (Lecture - 4 hrs)</option>
-            <option value="8" data-name="Database Lab (Lab)">Database Lab (Lab - 8 workload hrs)</option>
-            <option value="3" data-name="CS102 Database Systems (Lecture)">CS102 Database Systems (Lecture - 3 hrs)</option>
+      <!-- Subject -->
+      <div class="form-group">
+        <label for="selSubject">Subject</label>
+        <select id="selSubject" aria-describedby="errSubject">
+          <option value="">— Select subject —</option>
         </select>
-    </div>
+        <span class="field-error" id="errSubject" role="alert"></span>
+      </div>
 
-    <div class="form-group">
-        <label for="currentLoad">Current Assigned Load (Hours):</label>
-        <input type="number" id="currentLoad" value="6" min="0">
-    </div>
+      <!-- Semester -->
+      <div class="form-group">
+        <label for="selSemester">Semester</label>
+        <select id="selSemester" aria-describedby="errSemester">
+          <option value="1">Semester 1</option>
+          <option value="2">Semester 2</option>
+          <option value="3" selected>Semester 3</option>
+          <option value="4">Semester 4</option>
+          <option value="5">Semester 5</option>
+          <option value="6">Semester 6</option>
+          <option value="7">Semester 7</option>
+          <option value="8">Semester 8</option>
+        </select>
+        <span class="field-error" id="errSemester" role="alert"></span>
+      </div>
 
-    <div class="form-group">
-        <label for="semester">Semester & Academic Year:</label>
-        <div style="display: flex; gap: 10px;">
-            <select id="semester">
-                <option value="Odd">Odd Semester</option>
-                <option value="Even" selected>Even Semester</option>
-            </select>
-            <input type="text" id="year" value="2025-2026" style="width: 130px;">
-        </div>
-    </div>
+      <!-- Academic year -->
+      <div class="form-group">
+        <label for="inputYear">Academic year</label>
+        <input
+          type="text"
+          id="inputYear"
+          value="2026-2027"
+          placeholder="e.g. 2026-2027"
+          pattern="\d{4}-\d{4}"
+          maxlength="9"
+          aria-describedby="errYear"
+        >
+        <span class="field-error" id="errYear" role="alert"></span>
+      </div>
 
-    <button onclick="checkWorkload()">Calculate & Validate Workload</button>
+      <div class="btn-row">
+        <button type="submit" class="btn btn-primary">Check assignment</button>
+      </div>
 
-    <div id="resultBox" class="result-card">
-        <div id="resultTitle" style="font-weight: bold; margin-bottom: 4px;"></div>
-        <div id="resultDesc"></div>
-        <div id="mathDetails" class="math-breakdown"></div>
-    </div>
-</div>
+    </form>
+  </div><!-- /.panel -->
+</main>
 
+<script src="js/data.js"></script>
+<script src="js/workload.js"></script>
 <script>
-    function checkWorkload() {
-        const facultySelect = document.getElementById('faculty');
-        const subjectSelect = document.getElementById('subject');
-        const currentLoadInput = document.getElementById('currentLoad');
-        const resultBox = document.getElementById('resultBox');
-        const resultTitle = document.getElementById('resultTitle');
-        const resultDesc = document.getElementById('resultDesc');
-        const mathDetails = document.getElementById('mathDetails');
+(function () {
+  "use strict";
 
-        if (!facultySelect.value || !subjectSelect.value) {
-            alert('Please select both a faculty member and a subject.');
-            return;
-        }
+  const selFaculty  = document.getElementById("selFaculty");
+  const selSubject  = document.getElementById("selSubject");
+  const selSemester = document.getElementById("selSemester");
+  const inputYear   = document.getElementById("inputYear");
+  const loadInfo    = document.getElementById("loadInfo");
+  const form        = document.getElementById("assignForm");
 
-        const selectedFacultyOption = facultySelect.options[facultySelect.selectedIndex];
-        const maxLimit = parseInt(selectedFacultyOption.getAttribute('data-max'));
-        const currentLoad = parseFloat(currentLoadInput.value) || 0;
-        const newLoad = parseFloat(subjectSelect.value);
-        const subjectName = subjectSelect.options[subjectSelect.selectedIndex].getAttribute('data-name');
-        
-        const totalLoad = currentLoad + newLoad;
-        
-        resultBox.style.display = 'block';
+  // ── Populate faculty dropdown ────────────────────────────────────────────
+  FACULTY.forEach(function (f) {
+    const opt = document.createElement("option");
+    opt.value = f.id;
+    opt.textContent = f.name + " — " + f.designation;
+    selFaculty.appendChild(opt);
+  });
 
-        if (totalLoad <= maxLimit) {
-            resultBox.className = 'result-card success';
-            resultTitle.innerHTML = '✓ Assignment Allowed (Within Workload Limit)';
-            resultDesc.innerHTML = `The selected faculty member can take <b>${subjectName}</b>.`;
-            mathDetails.innerHTML = `Calculation: Current (${currentLoad} hrs) + New (${newLoad} hrs) = <b>${totalLoad} hrs</b> ≤ Max Limit (${maxLimit} hrs)`;
-        } else {
-            resultBox.className = 'result-card error';
-            resultTitle.innerHTML = '✕ Assignment Rejected (Overload Risk!)';
-            resultDesc.innerHTML = `Exceeds maximum allowable hours for this designation.`;
-            mathDetails.innerHTML = `Calculation: Current (${currentLoad} hrs) + New (${newLoad} hrs) = <b>${totalLoad} hrs</b> > Max Limit (${maxLimit} hrs)`;
-        }
+  // ── Populate subject dropdown ────────────────────────────────────────────
+  function buildSubjectOptions() {
+    // Remove all but the placeholder
+    while (selSubject.options.length > 1) selSubject.remove(1);
+
+    SUBJECTS.forEach(function (s) {
+      const opt = document.createElement("option");
+      opt.value = s.id;
+      const labNote = s.type === "LAB" ? " (counts twice)" : "";
+      opt.textContent = s.code + " — " + s.title + " | " + s.type + " | " + s.weeklyHours + " h/wk" + labNote;
+      selSubject.appendChild(opt);
+    });
+  }
+  buildSubjectOptions();
+
+  // ── Update load info box whenever faculty/semester/year changes ──────────
+  function updateLoadInfo() {
+    const fid  = parseInt(selFaculty.value, 10);
+    const sem  = parseInt(selSemester.value, 10);
+    const year = inputYear.value.trim();
+
+    if (!fid || !year) { loadInfo.hidden = true; return; }
+
+    const faculty   = FACULTY.find(function (f) { return f.id === fid; });
+    const assigned  = getAssignedSubjects(fid, sem, year);
+    const load      = assigned.reduce(function (sum, s) { return sum + workloadHours(s); }, 0);
+
+    let html = "<strong>Currently assigned: " + load + " of " + faculty.maxHours + " hours</strong> in semester " + sem + ", " + year;
+
+    if (assigned.length === 0) {
+      html += "<br><span class='none'>No subjects assigned in this semester and year.</span>";
+    } else {
+      html += "<ul>";
+      assigned.forEach(function (s) {
+        const hrs = workloadHoursLabel(s);
+        html += "<li>" + s.code + " " + s.title + " (" + s.type + ") — " + hrs + " h</li>";
+      });
+      html += "</ul>";
     }
+
+    loadInfo.innerHTML = html;
+    loadInfo.hidden = false;
+  }
+
+  selFaculty.addEventListener("change",  updateLoadInfo);
+  selSemester.addEventListener("change", updateLoadInfo);
+  inputYear.addEventListener("input",    updateLoadInfo);
+
+  // ── Show/hide LAB note on subject select ────────────────────────────────
+  selSubject.addEventListener("change", function () {
+    // remove any old note
+    const old = document.getElementById("labHint");
+    if (old) old.remove();
+
+    const sid = parseInt(selSubject.value, 10);
+    const sub = SUBJECTS.find(function (s) { return s.id === sid; });
+    if (sub && sub.type === "LAB") {
+      const note = document.createElement("span");
+      note.id = "labHint";
+      note.className = "lab-note";
+      note.textContent = "LAB — counts as " + (sub.weeklyHours * 2) + " h (weekly hours x 2)";
+      selSubject.parentNode.insertBefore(note, selSubject.nextSibling);
+    }
+  });
+
+  // ── Validation helpers ───────────────────────────────────────────────────
+  function showError(id, msg) {
+    document.getElementById(id).textContent = msg;
+  }
+  function clearErrors() {
+    ["errFaculty", "errSubject", "errSemester", "errYear"].forEach(function (id) {
+      document.getElementById(id).textContent = "";
+    });
+  }
+
+  function yearValid(val) {
+    return /^\d{4}-\d{4}$/.test(val);
+  }
+
+  // ── Form submit → navigate to result.html ───────────────────────────────
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    clearErrors();
+
+    let ok = true;
+
+    if (!selFaculty.value) {
+      showError("errFaculty", "Please select a faculty member.");
+      ok = false;
+    }
+    if (!selSubject.value) {
+      showError("errSubject", "Please select a subject.");
+      ok = false;
+    }
+    const sem = parseInt(selSemester.value, 10);
+    if (!sem || sem < 1 || sem > 8) {
+      showError("errSemester", "Please select a semester.");
+      ok = false;
+    }
+    const year = inputYear.value.trim();
+    if (!yearValid(year)) {
+      showError("errYear", "Enter a year in the format 2026-2027.");
+      ok = false;
+    }
+
+    if (!ok) return;
+
+    const params = new URLSearchParams({
+      faculty:  selFaculty.value,
+      subject:  selSubject.value,
+      semester: selSemester.value,
+      year:     year,
+    });
+    window.location.href = "result.html?" + params.toString();
+  });
+
+}());
 </script>
 
 </body>

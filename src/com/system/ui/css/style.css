@@ -1,0 +1,297 @@
+/* style.css — Faculty Workload Check, Manipal University Jaipur
+   Plain internal university tool: no gradients, glow, glassmorphism, or animation. */
+
+/* ─── Reset & base ─────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { font-size: 15px; }
+
+body {
+  font-family: "Segoe UI", system-ui, Arial, sans-serif;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #1a1a1a;
+  background: #f5f5f4;
+  min-height: 100vh;
+}
+
+/* ─── Top bar ───────────────────────────────────────────────────────────────── */
+.top-bar {
+  background: #2b2d33;
+  border-bottom: 3px solid #d9531e;
+  padding: 0 24px;
+}
+.top-bar-inner {
+  max-width: 860px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 14px 0;
+}
+.top-bar h1 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0;
+}
+.top-bar .dept {
+  font-size: 0.85rem;
+  color: #c8cad0;
+  margin-top: 2px;
+}
+
+/* ─── Page layout ───────────────────────────────────────────────────────────── */
+.page-content {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ─── Panel / card ──────────────────────────────────────────────────────────── */
+.panel {
+  background: #ffffff;
+  border: 1px solid #d0d5dd;
+  border-radius: 3px;
+  padding: 20px 24px;
+  margin-bottom: 16px;
+}
+.panel-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 16px;
+  color: #1a1a1a;
+}
+
+/* ─── Form elements ─────────────────────────────────────────────────────────── */
+.form-group {
+  margin-bottom: 16px;
+}
+.form-group label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  margin-bottom: 5px;
+  color: #333;
+}
+.form-group input,
+.form-group select {
+  display: block;
+  width: 100%;
+  height: 40px;
+  padding: 0 10px;
+  border: 1px solid #adb5bd;
+  border-radius: 3px;
+  font-family: inherit;
+  font-size: 0.93rem;
+  color: #1a1a1a;
+  background: #fff;
+  appearance: auto;
+}
+.form-group input:focus,
+.form-group select:focus {
+  outline: 2px solid #1a6ed8;
+  outline-offset: 1px;
+  border-color: #1a6ed8;
+}
+
+/* inline validation error */
+.field-error {
+  display: block;
+  font-size: 0.82rem;
+  color: #b42318;
+  margin-top: 4px;
+  min-height: 1.2em;
+}
+
+/* load summary shown after faculty is picked */
+.load-info {
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: #f0f4f8;
+  border: 1px solid #d0d5dd;
+  border-radius: 3px;
+  font-size: 0.88rem;
+}
+.load-info strong { color: #1a1a1a; }
+.load-info ul {
+  margin: 6px 0 0 16px;
+  padding: 0;
+}
+.load-info li { margin-bottom: 2px; }
+.load-info .none { color: #666; font-style: italic; }
+
+/* subject hint about LAB */
+.lab-note {
+  display: inline-block;
+  font-size: 0.82rem;
+  color: #8a5a00;
+  background: #fff4d6;
+  border: 1px solid #e5c56a;
+  border-radius: 3px;
+  padding: 2px 7px;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────── */
+.btn {
+  display: inline-block;
+  height: 40px;
+  padding: 0 20px;
+  font-family: inherit;
+  font-size: 0.93rem;
+  font-weight: 600;
+  border-radius: 3px;
+  cursor: pointer;
+  text-decoration: none;
+  line-height: 40px;
+  border: 1px solid transparent;
+}
+.btn-primary {
+  background: #2b2d33;
+  color: #ffffff;
+  border-color: #2b2d33;
+}
+.btn-primary:hover { background: #3e4049; border-color: #3e4049; }
+.btn-secondary {
+  background: #ffffff;
+  color: #2b2d33;
+  border-color: #adb5bd;
+}
+.btn-secondary:hover { background: #f5f5f4; }
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ─── Verdict box ───────────────────────────────────────────────────────────── */
+.verdict {
+  padding: 14px 16px 14px 20px;
+  border-radius: 3px;
+  border-left-width: 4px;
+  border-left-style: solid;
+  margin-bottom: 16px;
+}
+.verdict-label {
+  font-size: 1rem;
+  font-weight: 700;
+  display: block;
+  margin-bottom: 4px;
+}
+.verdict-reason { font-size: 0.92rem; }
+
+/* colour tokens */
+.verdict-allowed       { background: #e8f5ee; border-color: #1b7f4a; color: #0c4a26; }
+.verdict-near-limit    { background: #fff4d6; border-color: #c28a00; color: #5a3a00; }
+.verdict-overload      { background: #fdecea; border-color: #b42318; color: #6b1310; }
+.verdict-not-possible  { background: #e9eff7; border-color: #3b5b8a; color: #1e3356; }
+
+/* ─── Summary grid ──────────────────────────────────────────────────────────── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 24px;
+}
+.summary-item dt {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.summary-item dd {
+  font-size: 0.93rem;
+  color: #1a1a1a;
+}
+
+/* ─── Table ─────────────────────────────────────────────────────────────────── */
+.table-scroll { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+table th,
+table td {
+  padding: 7px 10px;
+  border-bottom: 1px solid #e2e6ea;
+  text-align: left;
+  white-space: nowrap;
+}
+table th {
+  font-weight: 700;
+  background: #f5f5f4;
+  color: #333;
+}
+table td.num,
+table th.num { text-align: right; }
+/* new-subject row */
+tr.new-row td { font-weight: 600; background: #f0f4ff; }
+/* total/limit rows */
+tr.subtotal-row td { border-top: 2px solid #adb5bd; font-weight: 700; }
+tr.limit-row td, tr.remaining-row td { font-weight: 600; color: #333; }
+tr.over-row td { color: #b42318; font-weight: 700; }
+
+/* ─── Capacity bar ──────────────────────────────────────────────────────────── */
+.cap-bar-wrap {
+  margin: 10px 0 4px;
+  height: 18px;
+  background: #e2e6ea;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.cap-bar-fill {
+  height: 100%;
+  border-radius: 3px 0 0 3px;
+  transition: none;
+}
+.cap-fill-ok        { background: #1b7f4a; }
+.cap-fill-near      { background: #c28a00; }
+.cap-fill-over      { background: #b42318; }
+.cap-bar-label {
+  font-size: 0.82rem;
+  color: #555;
+  margin-top: 3px;
+}
+
+/* ─── Plain-English "Why" section ───────────────────────────────────────────── */
+.why-text {
+  font-size: 0.93rem;
+  line-height: 1.65;
+  color: #1a1a1a;
+}
+
+/* ─── "What can be done" ────────────────────────────────────────────────────── */
+.suggestions h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; }
+.suggestions ul { margin: 0 0 12px 18px; }
+.suggestions li { margin-bottom: 4px; font-size: 0.9rem; }
+
+/* ─── Error / missing-params page ──────────────────────────────────────────── */
+.error-banner {
+  padding: 18px 20px;
+  background: #fdecea;
+  border: 1px solid #f5a6a0;
+  border-left: 4px solid #b42318;
+  border-radius: 3px;
+  color: #6b1310;
+  margin-bottom: 16px;
+}
+.error-banner p { margin-bottom: 8px; }
+.error-banner a { color: #6b1310; font-weight: 600; }
+
+/* ─── Utility ───────────────────────────────────────────────────────────────── */
+.mt8  { margin-top:  8px; }
+.mt16 { margin-top: 16px; }
+.mb0  { margin-bottom: 0; }
+
+/* ─── Responsive — 360 px wide: table scrolls, grid goes 1-col ─────────────── */
+@media (max-width: 520px) {
+  .summary-grid { grid-template-columns: 1fr; }
+  .top-bar h1 { font-size: 1rem; }
+}
