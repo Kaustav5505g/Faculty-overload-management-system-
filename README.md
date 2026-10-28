@@ -1,10 +1,18 @@
 # Faculty Overload Management System
 
 A Java + MySQL + browser application that checks whether a teaching assignment is allowed before recording it. Given a faculty member, subject, semester and academic year, the system applies the department workload rules, records the assignment only when it passes, and explains the decision in plain language.
-## 🚀 Project Overview
 
-Managing faculty teaching assignments manually often leads to miscalculated hours and accidental teaching overloads. This system provides a systematic approach to model faculty members and subjects, calculate workloads dynamically based on course types (Lectures vs. Labs), enforce strict department limits, and securely store records using JDBC.
 
+# Workload Rules
+| Rule | Detail |
+|---|---|
+| **Workload hours** | LECTURE: weekly hours counted once. LAB: weekly hours counted **twice** (e.g. 4 weekly hours = 8 workload hours). |
+| **Limits** | Professor: **14 h**. Assistant Professor: **18 h**. |
+| **Scope** | Load is totalled per faculty member, per semester and academic year. |
+| **Acceptance** | Allowed when `current load + new subject hours ≤ limit`. Equal to the limit is allowed. |
+| **Single owner** | A subject can have only **one** faculty member per semester and academic year. |
+These five rules are enforced in three independent layers: the MySQL database (trigger + stored procedure), the Java service layer (`Faculty.canAssign()`), and the browser UI (`workload.js`).
+---
 ---
 
 ## 🛠️ Tech Stack & Architecture
