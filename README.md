@@ -27,7 +27,7 @@ These five rules are enforced in three independent layers: the MySQL database (t
 ---
 ---
 
-## 📌 Key Features & Business Logic
+## 📌 Key Features 
 
 1. **OOP Hierarchy:** Abstract `Faculty` class extended by specialized subclasses (`Professor` with a max limit of 14 hours, and `Assistant Professor` with a max limit of 18 hours)[cite: 4, 5].
 2. **Workload Calculation:** Automatically weighs teaching hours according to course structure (e.g., standard lectures vs. structured lab hours)[cite: 4, 6].
